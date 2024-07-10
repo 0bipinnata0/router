@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Route from "./components/Route";
 import Routes from "./components/Routes";
 import Link from "./components/Link";
-import HashRouter from "./components/router/HashRouter";
+import { BrowserRouter } from "./components/router";
 
 const Home = () => (
   <div>
@@ -21,22 +21,35 @@ const Dash = () => {
   return <div>Dash</div>;
 };
 
+const Info = () => {
+  useEffect(() => {
+    console.info("Info装载");
+    return () => {
+      console.info("InfoDash");
+    };
+  }, []);
+  return <div>Dash info</div>;
+};
+
 const App: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Link to="/">home</Link>
       <Link to="/dash">dash</Link>
+      <Link to="/dash/info">dash_info</Link>
       <Routes>
         123
         <Route path="/" element={<Home />} />
         {children}
-        <Route path="/dash" element={<Dash />} />
+        <Route path="/dash" element={<Dash />}>
+          <Route path="info" element={<Info />} />
+        </Route>
         <div>
           <div>2</div>
           <div>111</div>
         </div>
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

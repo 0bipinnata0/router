@@ -1,25 +1,12 @@
 import React, { useEffect, useMemo } from "react";
-import routeMap from "./routeMap";
-import Route from "./Route";
 import routeEmit from "./routeEmit";
 import usePathname from "../hook/usePathname";
-
-function isRouteValidElement(
-  object: unknown
-): object is React.ReactElement<React.ComponentProps<typeof Route>> {
-  return React.isValidElement(object) && object.type === Route;
-}
+import pickRoute from "../utils/pickRoute";
 
 const Routes: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [pathname, setPathName] = usePathname();
-  useMemo(() => {
-    React.Children.toArray(children)
-      .filter(isRouteValidElement)
-      .map(({ props }) => {
-        const { path, element } = props;
-        routeMap.set(path, element);
-      });
-  }, [children]);
+  const map = useMemo(() => new Map(pickRoute(children)), [children]);
+  console.info("map", map);
 
   useEffect(() => {
     const unsubscribe = routeEmit.on("popstate", (pathname) => {
@@ -29,7 +16,7 @@ const Routes: React.FC<React.PropsWithChildren> = ({ children }) => {
       unsubscribe();
     };
   }, [setPathName]);
-  return useMemo(() => routeMap.get(pathname), [pathname]);
+  return useMemo(() => map.get(pathname), [map, pathname]);
 };
 
 export default Routes;
