@@ -11,7 +11,7 @@ const MemoryRouter: React.FC<React.PropsWithChildren> = ({ children }) => {
   }, []);
 
   return (
-    <PathnameProvider initialValue={localStorage.getItem("pathName")!}>
+    <PathnameProvider initialValue={localStorage.getItem("pathName") ?? "/"}>
       {children}
     </PathnameProvider>
   );

@@ -4,7 +4,7 @@ const Info = () => {
   useEffect(() => {
     console.info("Info装载");
     return () => {
-      console.info("InfoDash");
+      console.info("Info卸载<<<");
     };
   }, []);
   return <div>Dash info</div>;

@@ -6,7 +6,7 @@ const Dash = () => {
   useEffect(() => {
     console.info("Dash装载");
     return () => {
-      console.info("卸载Dash");
+      console.info("卸载Dash<<<");
     };
   }, []);
   return (
