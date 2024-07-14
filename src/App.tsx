@@ -22,6 +22,8 @@ const App: React.FC<React.PropsWithChildren> = () => {
           <Route path="a/b/info" element={<Info />} />
           <Route path="info" element={<>hello single info</>} />
         </Route>
+        <Route path="/dash/a/b/info" element={<>absolute info x</>} />
+        <Route path="/dash/a/b/x" element={<div>dash a b x</div>} />
       </Routes>
     </BrowserRouter>
   );

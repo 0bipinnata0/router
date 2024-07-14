@@ -4,23 +4,38 @@ import usePathname from "../hook/usePathname";
 import pickRoute from "../utils/pickRoute";
 import { OutletProvider } from "../hook/useOutlet";
 
+const Empty = () => <></>;
+
 const getX = (
   routeTree: ReturnType<typeof pickRoute>,
-  pathName: string
+  pathName: string,
+  excludePathNames: string[] = []
 ): React.ReactNode => {
   const idx = Array.from(routeTree.keys()).find(
-    (aPath) => aPath !== "/" && pathName.includes(aPath)
+    (aPath) =>
+      aPath !== "/" &&
+      !excludePathNames.includes(aPath) &&
+      pathName.includes(aPath)
   );
   if (!idx) {
-    return <></>;
+    return null;
   }
   const target = routeTree.get(idx);
   if (!target) {
-    return <></>;
+    return null;
   }
   const { el, children } = target;
-  const initialValue = children ? getX(children, pathName) : <></>;
+  if (idx === pathName) {
+    return <OutletProvider initialValue={<Empty />}>{el}</OutletProvider>;
+  }
+  if (!children) {
+    return null;
+  }
 
+  const initialValue = getX(children, pathName);
+  if (initialValue === null) {
+    return getX(routeTree, pathName, [...excludePathNames, idx]);
+  }
   return <OutletProvider initialValue={initialValue}>{el}</OutletProvider>;
 };
 
