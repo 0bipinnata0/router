@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import Outlet from "../components/Outlet";
+// import { Outlet } from "react-router-dom";
 
 const Dash = () => {
   useEffect(() => {

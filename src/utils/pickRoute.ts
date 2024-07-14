@@ -14,23 +14,28 @@ function handlePath(aPath: string, root?: string): string {
   return `${root}/${aPath}`;
 }
 
-//  丢失了层级关系
-function pickRoute(
-  children: ReactNode,
-  root = "/"
-): Array<[string, React.ReactNode]> {
-  return React.Children.toArray(children)
-    .filter(isRouteValidElement)
-    .map(({ props }) => {
-      const { path, element, children } = props;
-      const newPath = handlePath(path, root);
-      const pair: [string, React.ReactNode] = [newPath, element];
-      if (children) {
-        return [pair, ...pickRoute(children, newPath)];
-      }
-      return [pair];
-    })
-    .flat();
+interface RouteElement {
+  el: ReactNode;
+  children?: Map<string, RouteElement>;
+}
+
+function pickRoute(children: ReactNode, root = "/"): Map<string, RouteElement> {
+  return new Map<string, RouteElement>(
+    React.Children.toArray(children)
+      .filter(isRouteValidElement)
+      .map(({ props }) => {
+        const { path, element, children } = props;
+        const newPath = handlePath(path, root);
+        const pair: [string, RouteElement] = [
+          newPath,
+          {
+            el: element,
+            children: children ? pickRoute(children, newPath) : undefined,
+          },
+        ];
+        return pair;
+      })
+  );
 }
 
 export default pickRoute;
