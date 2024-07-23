@@ -1,7 +1,7 @@
 import React from "react";
 import Route from "./components/Route";
 import Routes from "./components/Routes";
-import { MemoryRouter } from "./components/router";
+import { BrowserRouter } from "./components/router";
 import Link from "./components/Link";
 import Home from "./app/Home";
 import Dash from "./app/Dash";
@@ -11,7 +11,7 @@ import Info from "./app/Info";
 const App: React.FC<React.PropsWithChildren> = () => {
   return (
     <>
-      <MemoryRouter>
+      <BrowserRouter>
         <Link to="/">home</Link>
         <Link to="/dash">dash</Link>
         <Link to="/dash/info">dash_info</Link>
@@ -26,7 +26,7 @@ const App: React.FC<React.PropsWithChildren> = () => {
           <Route path="/dash/a/b/info" element={<div>absolute info x</div>} />
           <Route path="/dash/a/b/x" element={<div>dash a b x</div>} />
         </Routes>
-      </MemoryRouter>
+      </BrowserRouter>
     </>
   );
 };

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Outlet from "../components/Outlet";
 // import { Outlet } from "react-router-dom";
 
-const Dash = () => {
+const Dash: React.FC<React.PropsWithChildren> = () => {
   useEffect(() => {
     console.info("Dash装载");
     return () => {
@@ -13,6 +13,7 @@ const Dash = () => {
     <div>
       Dash
       <div>
+        {/* {children} */}
         <Outlet />
       </div>
     </div>

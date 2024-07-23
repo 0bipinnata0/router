@@ -6,7 +6,7 @@ import { OutletProvider } from "../hook/useOutlet";
 
 const Empty = () => <></>;
 
-const getX = (
+const getRenderEle = (
   routeTree: ReturnType<typeof pickRoute>,
   pathName: string,
   excludePathNames: string[] = []
@@ -32,12 +32,15 @@ const getX = (
     return null;
   }
 
-  const initialValue = getX(children, pathName);
+  const initialValue = getRenderEle(children, pathName);
   if (initialValue === null) {
-    return getX(routeTree, pathName, [...excludePathNames, idx]);
+    return getRenderEle(routeTree, pathName, [...excludePathNames, idx]);
   }
+  // return React.cloneElement(<>{el}</>, { children: initialValue });
   return <OutletProvider initialValue={initialValue}>{el}</OutletProvider>;
 };
+
+const base = new Map<string, React.ReactNode>();
 
 const Routes: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [pathname, setPathName] = usePathname();
@@ -52,7 +55,34 @@ const Routes: React.FC<React.PropsWithChildren> = ({ children }) => {
     };
   }, [setPathName]);
 
-  return useMemo(() => getX(routeTree, pathname), [pathname, routeTree]);
+  const el = useMemo(
+    () => getRenderEle(routeTree, pathname),
+    [pathname, routeTree]
+  );
+  useEffect(() => {
+    base.set(pathname, el);
+  }, [el, pathname]);
+
+  const x = useMemo(() => {
+    !base.has(pathname) && base.set(pathname, el);
+    return base;
+  }, [el, pathname]);
+  // keep-alive
+  return useMemo(() => {
+    const els: React.ReactNode[] = [];
+    x.forEach((ele, key) => {
+      els.push(
+        key !== pathname ? (
+          <div style={{ display: "none" }} key={key}>
+            {ele}
+          </div>
+        ) : (
+          <div key={key}>{ele}</div>
+        )
+      );
+    });
+    return <div>{els}</div>;
+  }, [pathname, x]);
 };
 
 export default Routes;

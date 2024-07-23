@@ -7,7 +7,7 @@ const Info = () => {
       console.info("Info卸载<<<");
     };
   }, []);
-  return <div>Dash info</div>;
+  return <div style={{ backgroundColor: "red" }}>this Dash info</div>;
 };
 
 export default Info;
