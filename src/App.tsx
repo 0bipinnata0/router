@@ -17,10 +17,10 @@ const App: React.FC<React.PropsWithChildren> = () => {
         <Link to="/dash/info">dash_info</Link>
         <Link to="/dash/a/b/info">dash_a_b_info</Link>
         <Link to="/dash/a/b/x">dash_a_b_x</Link>
-        <Routes>
+        <Routes role="hel">
           <Route path="/" element={<Home />} />
           <Route path="/dash" element={<Dash />}>
-            <Route path="a/b/info" element={<Info />} />
+            <Route path="a/b/info" element={<Info />} role={["x"]} />
             <Route path="info" element={<>hello single info</>} />
           </Route>
           <Route path="/dash/a/b/info" element={<div>absolute info x</div>} />

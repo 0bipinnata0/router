@@ -42,9 +42,12 @@ const getRenderEle = (
 
 const base = new Map<string, React.ReactNode>();
 
-const Routes: React.FC<React.PropsWithChildren> = ({ children }) => {
+const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
+  children,
+  role,
+}) => {
   const [pathname, setPathName] = usePathname();
-  const routeTree = useMemo(() => pickRoute(children), [children]);
+  const routeTree = useMemo(() => pickRoute(role, children), [children, role]);
 
   useEffect(() => {
     const unsubscribe = routeEmit.on("popstate", (pathname) => {
