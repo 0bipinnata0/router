@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import routeEmit from "../routeEmit";
-import { PathnameProvider } from "../../hook/usePathname";
+import { CourrentRouteProvider } from "../../hook/useCurrentRoute";
 
 const BrowserRouter: React.FC<React.PropsWithChildren> = ({ children }) => {
   useEffect(() => {
@@ -21,9 +21,9 @@ const BrowserRouter: React.FC<React.PropsWithChildren> = ({ children }) => {
   }, []);
 
   return (
-    <PathnameProvider initialValue={location.pathname}>
+    <CourrentRouteProvider initialValue={location.pathname}>
       {children}
-    </PathnameProvider>
+    </CourrentRouteProvider>
   );
 };
 

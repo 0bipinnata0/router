@@ -30,14 +30,3 @@ export class Emitter<
 const emit = new Emitter();
 
 export default emit;
-
-// const x = (emit as Emitter<{ popstate(): void }>)
-//   .on("abc", (a: number) => {
-//     console.info("a", a);
-//   })
-//   .on("d", (b: string) => {
-//     console.info("b", b);
-//   })
-//   .on("z", (x: { name: string; age: number }) => {
-//     console.info("a", x);
-//   });

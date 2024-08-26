@@ -1,10 +1,17 @@
 import React, { useEffect, useMemo } from "react";
 import routeEmit from "./routeEmit";
-import usePathname from "../hook/usePathname";
-import pickRoute from "../utils/pickRoute";
+import useCurrentRoute from "../hook/useCurrentRoute";
+import pickRoute, { pickRoute2 } from "../utils/pickRoute";
 import { OutletProvider } from "../hook/useOutlet";
 
 const Empty = () => <></>;
+
+interface RouteEl {
+  children?: Record<string, RouteEl>;
+  el: React.ReactNode;
+}
+
+const find = (pattern: string, el: RouteEl) => {};
 
 const getRenderEle = (
   routeTree: ReturnType<typeof pickRoute>,
@@ -46,36 +53,44 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
   children,
   role,
 }) => {
-  const [pathname, setPathName] = usePathname();
+  const [currentRoute, setCurrentRoute] = useCurrentRoute();
   const routeTree = useMemo(() => pickRoute(role, children), [children, role]);
+  const routeTree2 = useMemo(
+    () => pickRoute2(role, children),
+    [children, role]
+  );
+
+  console.info("routeTree", routeTree);
 
   useEffect(() => {
-    const unsubscribe = routeEmit.on("popstate", (pathname) => {
-      setPathName(pathname);
-    });
+    const unsubscribe = routeEmit.on("popstate", setCurrentRoute);
     return () => {
       unsubscribe();
     };
-  }, [setPathName]);
+  }, [setCurrentRoute]);
+  const el2 = useMemo(() => {
+    console.info(">>> routeTree2", routeTree2);
+    // return getRenderEle(routeTree, currentRoute);
+  }, [routeTree2]);
 
-  const el = useMemo(
-    () => getRenderEle(routeTree, pathname),
-    [pathname, routeTree]
-  );
+  const el = useMemo(() => {
+    console.info(">>> currentRoute", currentRoute);
+    return getRenderEle(routeTree, currentRoute);
+  }, [currentRoute, routeTree]);
   useEffect(() => {
-    base.set(pathname, el);
-  }, [el, pathname]);
+    base.set(currentRoute, el);
+  }, [el, currentRoute]);
 
   const x = useMemo(() => {
-    !base.has(pathname) && base.set(pathname, el);
+    !base.has(currentRoute) && base.set(currentRoute, el);
     return base;
-  }, [el, pathname]);
+  }, [el, currentRoute]);
   // keep-alive
   return useMemo(() => {
     const els: React.ReactNode[] = [];
     x.forEach((ele, key) => {
       els.push(
-        key !== pathname ? (
+        key !== currentRoute ? (
           <div style={{ display: "none" }} key={key}>
             {ele}
           </div>
@@ -85,7 +100,7 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
       );
     });
     return <div>{els}</div>;
-  }, [pathname, x]);
+  }, [currentRoute, x]);
 };
 
 export default Routes;
