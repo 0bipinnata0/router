@@ -1,24 +1,9 @@
 import React from "react";
+import mapReducer from "./mapReducer";
 import * as R from "ramda";
 
-const mapReducer = R.curry((mappingFn, combineFn) => {
-  return (acc, v) => {
-    return combineFn(acc, mappingFn(v));
-  };
-});
-const filterReducer = R.curry((predicateFn, combineFn) => {
-  return (acc, v) => {
-    if (predicateFn(v)) {
-      return combineFn(acc, v);
-    }
-    return acc;
-  };
-});
-
-// R.reduceWhile
-
-export const filterInRouteElementReducer = (
-  predicateFn,
+const filterInRouteElementReducer = (
+  aTransducer,
   mappingFn,
   listCombine,
   defaultValue
@@ -26,7 +11,7 @@ export const filterInRouteElementReducer = (
   function handleChildren(reactEl) {
     const children = React.Children.toArray(reactEl);
     const transducer = R.compose(
-      filterReducer(predicateFn),
+      aTransducer,
       mapReducer((el) =>
         React.cloneElement(el, { children: handleChildren(el.props.children) })
       ),
@@ -34,3 +19,4 @@ export const filterInRouteElementReducer = (
     );
     return children.reduce(transducer(listCombine), defaultValue);
   };
+export default filterInRouteElementReducer;

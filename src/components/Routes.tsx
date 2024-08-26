@@ -1,51 +1,36 @@
 import React, { useEffect, useMemo } from "react";
 import routeEmit from "./routeEmit";
 import useCurrentRoute from "../hook/useCurrentRoute";
-import pickRoute, { pickRoute2 } from "../utils/pickRoute";
+import pickRoute from "../utils/pickRoute";
+import find from "../utils/find";
 import { OutletProvider } from "../hook/useOutlet";
 
-const Empty = () => <></>;
-
-interface RouteEl {
-  children?: Record<string, RouteEl>;
-  el: React.ReactNode;
+function resolvePath(acc: string, v: string) {
+  if (acc === "") {
+    return v;
+  }
+  const reg = /^\.?\/.*$\//i;
+  const pureV = v.replace(reg, "");
+  return `${acc}/${pureV}`;
 }
 
-const find = (pattern: string, el: RouteEl) => {};
+function getAbsolutePath(els: Array<{ path: string }>) {
+  return els.map((el) => el.path).reduce(resolvePath, "");
+}
+function recursionFn(item: IRoute) {
+  return item.children;
+}
 
-const getRenderEle = (
-  routeTree: ReturnType<typeof pickRoute>,
-  pathName: string,
-  excludePathNames: string[] = []
-): React.ReactNode => {
-  const idx = Array.from(routeTree.keys()).find(
-    (aPath) =>
-      aPath !== "/" &&
-      !excludePathNames.includes(aPath) &&
-      pathName.includes(aPath)
-  );
-  if (!idx) {
-    return null;
-  }
-  const target = routeTree.get(idx);
-  if (!target) {
-    return null;
-  }
-  const { el, children } = target;
-  if (idx === pathName) {
-    return <OutletProvider initialValue={<Empty />}>{el}</OutletProvider>;
-  }
-  if (!children) {
-    return null;
-  }
+function predicateFn(target: string) {
+  return (paths: IRoute[]) => {
+    return target === getAbsolutePath(paths);
+  };
+}
+function combineFn(current: IRoute, routeList: IRoute[]) {
+  return [...routeList, current];
+}
 
-  const initialValue = getRenderEle(children, pathName);
-  if (initialValue === null) {
-    return getRenderEle(routeTree, pathName, [...excludePathNames, idx]);
-  }
-  // return React.cloneElement(<>{el}</>, { children: initialValue });
-  return <OutletProvider initialValue={initialValue}>{el}</OutletProvider>;
-};
+const Empty = () => <></>;
 
 const base = new Map<string, React.ReactNode>();
 
@@ -54,13 +39,6 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
   role,
 }) => {
   const [currentRoute, setCurrentRoute] = useCurrentRoute();
-  const routeTree = useMemo(() => pickRoute(role, children), [children, role]);
-  const routeTree2 = useMemo(
-    () => pickRoute2(role, children),
-    [children, role]
-  );
-
-  console.info("routeTree", routeTree);
 
   useEffect(() => {
     const unsubscribe = routeEmit.on("popstate", setCurrentRoute);
@@ -68,39 +46,45 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
       unsubscribe();
     };
   }, [setCurrentRoute]);
-  const el2 = useMemo(() => {
-    console.info(">>> routeTree2", routeTree2);
-    // return getRenderEle(routeTree, currentRoute);
-  }, [routeTree2]);
 
   const el = useMemo(() => {
-    console.info(">>> currentRoute", currentRoute);
-    return getRenderEle(routeTree, currentRoute);
-  }, [currentRoute, routeTree]);
+    const data: { find: boolean; result: IRoute[] } = find(
+      recursionFn,
+      predicateFn(currentRoute),
+      combineFn
+    )(pickRoute(role, children), []);
+    if (!data.find) {
+      return <div>not found</div>;
+    }
+    return data.result.reduceRight((acc, val) => {
+      return <OutletProvider initialValue={acc}>{val.el}</OutletProvider>;
+    }, <Empty />);
+  }, [children, currentRoute, role]);
+
   useEffect(() => {
     base.set(currentRoute, el);
   }, [el, currentRoute]);
 
-  const x = useMemo(() => {
+  const cache = useMemo(() => {
     !base.has(currentRoute) && base.set(currentRoute, el);
     return base;
   }, [el, currentRoute]);
   // keep-alive
   return useMemo(() => {
     const els: React.ReactNode[] = [];
-    x.forEach((ele, key) => {
+    cache.forEach((el, key) => {
       els.push(
         key !== currentRoute ? (
           <div style={{ display: "none" }} key={key}>
-            {ele}
+            {el}
           </div>
         ) : (
-          <div key={key}>{ele}</div>
+          <div key={key}>{el}</div>
         )
       );
     });
     return <div>{els}</div>;
-  }, [currentRoute, x]);
+  }, [currentRoute, cache]);
 };
 
 export default Routes;

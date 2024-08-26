@@ -11,7 +11,7 @@ const Dash: React.FC<React.PropsWithChildren> = () => {
   }, []);
   return (
     <div>
-      Dash
+      Dash x
       <div>
         {/* {children} */}
         <Outlet />

@@ -1,8 +1,8 @@
-import React from "react";
-import { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import Route from "../components/Route";
 import * as R from "ramda";
-import { filterInRouteElementReducer } from "./pickRoute2";
+import filterInRouteElementReducer from "./filterInRouteElementReducer";
+import filterReducer from "./filterReducer";
 
 function isRouteValidElement(
   object: unknown
@@ -10,19 +10,15 @@ function isRouteValidElement(
   return React.isValidElement(object) && object.type === Route;
 }
 
-const mappingFn = ({
+const createRoute = ({
   props,
-}: React.ReactElement<React.ComponentProps<typeof Route>>) => {
+}: React.ReactElement<React.ComponentProps<typeof Route>>): IRoute => {
   const { path, element, children } = props;
-  return {
-    [path]: Object.assign(
-      Object.create(null),
-      {
-        el: element,
-      },
-      R.isEmpty(children) ? {} : { children }
-    ),
-  };
+  return Object.assign(Object.create(null), {
+    path,
+    el: element,
+    children: R.isEmpty(children) ? [] : children,
+  });
 };
 
 function checkRoleAccess(
@@ -39,74 +35,20 @@ function checkRoleAccess(
   return role.includes(userRole);
 }
 
-function createAbsolutePath(aPath: string, root?: string): string {
-  if (aPath.startsWith("/")) {
-    return aPath;
-  }
-  return `${root}/${aPath}`;
-}
+const listCombine = (list: IRoute[], obj: IRoute) => {
+  return [...list, obj];
+};
 
-interface RouteElement {
-  el: ReactNode;
-  role?: string[];
-  children?: Map<string, RouteElement>;
-}
-
-function pickRoute(
-  userRole: string | undefined,
-  children: ReactNode,
-  root = "/"
-): Map<string, RouteElement> {
-  const checkCurrentRoleAccess = R.curryN(2, checkRoleAccess)(userRole);
-  return new Map<string, RouteElement>(
-    React.Children.toArray(children)
-      .filter(isRouteValidElement)
-      .filter(checkCurrentRoleAccess)
-      .map(({ props }) => {
-        const { path, element, children } = props;
-        const newPath = createAbsolutePath(path, root);
-        const pair: [string, RouteElement] = [
-          newPath,
-          {
-            el: element,
-            children: children
-              ? pickRoute(userRole, children, newPath)
-              : undefined,
-          },
-        ];
-        return pair;
-      })
+const pickRoute = (userRole: string | undefined, children: ReactNode) => {
+  const transducer = R.compose(
+    filterReducer(isRouteValidElement),
+    filterReducer(R.curryN(2, checkRoleAccess)(userRole))
   );
-}
-
-const listCombine = (
-  list: Record<string, unknown>,
-  obj: Record<string, unknown>
-) => {
-  return Object.assign(Object.create(null), list, obj);
-};
-
-export const pickRoute2 = (
-  userRole: string | undefined,
-  children: ReactNode
-) => {
   return filterInRouteElementReducer(
-    (v: unknown) =>
-      [isRouteValidElement, R.curryN(2, checkRoleAccess)(userRole)].every(
-        (cb) => cb(v)
-      ),
-    mappingFn,
+    transducer,
+    createRoute,
     listCombine,
-    Object.create(null)
-  )(children);
+    []
+  )(children) as IRoute[];
 };
-
-export default (
-  userRole: string | undefined,
-  children: ReactNode,
-  root = "/"
-) => {
-  const result = pickRoute(userRole, children, root);
-  console.info("route **** ", result);
-  return result;
-};
+export default pickRoute;
