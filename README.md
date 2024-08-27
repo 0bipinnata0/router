@@ -20,3 +20,15 @@ Routes
 1. 校验
    1.1 过滤非 Route
    1.2 过滤无权限用户
+
+## 介绍
+
+### component
+
+BrowserRouter,
+HashRouter,
+MemoryRouter,
+Link,
+Outlet,
+Route,
+Routes
