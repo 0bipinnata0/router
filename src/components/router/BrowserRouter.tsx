@@ -10,16 +10,6 @@ const BrowserRouter: React.FC<React.PropsWithChildren> = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    const cb = () => {
-      routeEmit.emit("popstate", location.pathname);
-    };
-    window.addEventListener("popstate", cb);
-    return () => {
-      window.removeEventListener("popstate", cb);
-    };
-  }, []);
-
   return (
     <CourrentRouteProvider initialValue={location.pathname}>
       {children}

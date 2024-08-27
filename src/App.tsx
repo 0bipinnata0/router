@@ -17,7 +17,7 @@ const App: React.FC<React.PropsWithChildren> = () => {
         <Link to="/dash/info">dash_info</Link>
         <Link to="/dash/a/b/info">dash_a_b_info</Link>
         <Link to="/dash/a/b/x">dash_a_b_x</Link>
-        <Routes role="xy">
+        <Routes>
           <div>hello</div>
           <Route path="/" element={<Home />} />
           <Route path="/dash" element={<Dash />}>
