@@ -1,23 +1,33 @@
 {
-  "name": "my-react-app",
+  "name": "@0bipinnata0/router",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "distode/index.d.ts",
   "type": "module",
+  "repository": {
+    "url": "https://github.com/0bipinnata0/my-router"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsup",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "ramda": "^0.30.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.24.1",
-    "use-sync-external-store": "^1.2.2",
-    "zustand": "^4.5.2"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "react-router-dom": "^6.24.1",
+    "use-sync-external-store": "^1.2.2",
+    "zustand": "^4.5.2",
     "@types/ramda": "^0.30.1",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
@@ -28,6 +38,7 @@
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
+    "tsup": "^8.2.4",
     "typescript": "^5.2.2",
     "vite": "^5.0.0"
   }
