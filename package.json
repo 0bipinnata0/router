@@ -8,6 +8,9 @@
   "repository": {
     "url": "https://github.com/0bipinnata0/my-router"
   },
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
