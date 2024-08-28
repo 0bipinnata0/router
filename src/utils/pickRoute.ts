@@ -7,7 +7,6 @@ import filterReducer from "./filterReducer";
 function isRouteValidElement(
   object: unknown
 ): object is React.ReactElement<React.ComponentProps<typeof Route>> {
-  console.info("isRouteValidElement");
   return React.isValidElement(object) && object.type === Route;
 }
 
@@ -26,7 +25,6 @@ function checkRoleAccess(
   userRole: string | undefined,
   el: React.ReactElement<React.ComponentProps<typeof Route>>
 ) {
-  console.info("checkRoleAccess");
   const { role } = el.props;
   if (!role) {
     return true;
