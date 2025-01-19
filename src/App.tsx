@@ -2,33 +2,39 @@ import React from "react";
 import Route from "./components/Route";
 import Routes from "./components/Routes";
 import Link from "./components/Link";
-import { MemoryRouter as Router } from "./components/router/memory-router";
+// import { MemoryRouter as Router } from "./components/router/memory-router";
 // import Router from "./components/router/BrowserRouter";
-// import Router from "./components/router/HashRouter";
+import Router from "./components/router/HashRouter";
 import Home from "./app/Home";
-import Dash from "./app/Dash";
-import Info from "./app/Info";
+import { Login } from "./app/login";
+import { Register } from "./app/register";
+import { Course } from "./app/course";
+import { Events } from "./app/events";
+import { Backend } from "./app/course/backend";
+import { Frontend } from "./app/course/frontend";
+import { Android } from "./app/course/android";
+import { IOS } from "./app/course/ios";
 // import { HashRouter, Link, Route, Routes } from "react-router-dom";
 
 const App: React.FC<React.PropsWithChildren> = () => {
   return (
     <>
       <Router>
-        <Link to="/">home</Link>
-        <Link to="/dash">dash</Link>
-        <Link to="/dash/info">dash_info</Link>
-        <Link to="/dash/a/b/info">dash_a_b_info</Link>
-        <Link to="/dash/a/b/x">dash_a_b_x</Link>
+        <Link to="/">主页</Link>
+        <Link to="/login">登录</Link>
+        <Link to="/register">注册</Link>
         <Routes>
-          <div>hello</div>
-          <Route path="/" element={<Home />} />
-          <Route path="/dash" element={<Dash />}>
-            <div>111</div>
-            <Route path="a/b/info" element={<Info />} role={["x"]} />
-            <Route path="info" element={<>hello single info</>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Home />}>
+            <Route path="/course" element={<Course />}>
+              <Route path="backend" element={<Backend />} />
+              <Route path="frontend" element={<Frontend />} />
+              <Route path="android" element={<Android />} />
+              <Route path="ios" element={<IOS />} />
+            </Route>
+            <Route path="/events" element={<Events />} />
           </Route>
-          <Route path="/dash/a/b/info" element={<div>absolute info x</div>} />
-          <Route path="/dash/a/b/x" element={<div>dash a b x</div>} />
         </Routes>
       </Router>
     </>

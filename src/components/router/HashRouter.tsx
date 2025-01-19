@@ -11,7 +11,11 @@ const HashRouter: React.FC<React.PropsWithChildren> = ({ children }) => {
   }, []);
 
   return (
-    <RouteProvider initialValue={location.hash.replace(/^#/g, "")}>
+    <RouteProvider
+      initialValue={
+        location.hash === "" ? "/" : location.hash.replace(/^#/g, "")
+      }
+    >
       {children}
     </RouteProvider>
   );

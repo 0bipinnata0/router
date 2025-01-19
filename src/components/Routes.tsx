@@ -5,16 +5,17 @@ import pickRoute from "../utils/pickRoute";
 import find from "../utils/find";
 import { OutletProvider } from "../hook/useOutlet";
 
-function resolvePath(acc: string, v: string) {
-  if (acc === "") {
-    return v;
-  }
-  const reg = /^\.?\/.*$\//i;
-  const pureV = v.replace(reg, "");
-  return `${acc}/${pureV}`;
-}
+const reg = /^\.?\/.*$\//i;
+
 function getAbsolutePath(els: Array<{ path: string }>) {
-  return els.map((el) => el.path).reduce(resolvePath, "");
+  const result = els
+    .map((el) => el.path.replace(reg, ""))
+    .filter((path) => path !== "/")
+    .join("/");
+  if (result.startsWith("/")) {
+    return result;
+  }
+  return `/${result}`;
 }
 function recursionFn(item: IRoute) {
   return item.children;
@@ -22,7 +23,9 @@ function recursionFn(item: IRoute) {
 
 function predicateFn(target: string) {
   return (paths: IRoute[]) => {
-    return target === getAbsolutePath(paths);
+    const result = getAbsolutePath(paths);
+    console.info("result", result, "___", target);
+    return target === result;
   };
 }
 function combineFn(current: IRoute, routeList: IRoute[]) {
