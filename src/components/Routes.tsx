@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import routeEmit from "./routeEmit";
-import useCurrentRoute from "../hook/useCurrentRoute";
+import useRoute from "../hook/useRoute";
 import pickRoute from "../utils/pickRoute";
 import find from "../utils/find";
 import { OutletProvider } from "../hook/useOutlet";
@@ -13,7 +13,6 @@ function resolvePath(acc: string, v: string) {
   const pureV = v.replace(reg, "");
   return `${acc}/${pureV}`;
 }
-
 function getAbsolutePath(els: Array<{ path: string }>) {
   return els.map((el) => el.path).reduce(resolvePath, "");
 }
@@ -38,19 +37,19 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
   children,
   role,
 }) => {
-  const [currentRoute, setCurrentRoute] = useCurrentRoute();
+  const [route, setRoute] = useRoute();
 
   useEffect(() => {
-    const unsubscribe = routeEmit.on("popstate", setCurrentRoute);
+    const unsubscribe = routeEmit.on("popstate", setRoute);
     return () => {
       unsubscribe();
     };
-  }, [setCurrentRoute]);
+  }, [setRoute]);
 
   const el = useMemo(() => {
     const data: { find: boolean; result: IRoute[] } = find(
       recursionFn,
-      predicateFn(currentRoute),
+      predicateFn(route),
       combineFn
     )(pickRoute(role, children), []);
     if (!data.find) {
@@ -59,22 +58,24 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
     return data.result.reduceRight((acc, val) => {
       return <OutletProvider initialValue={acc}>{val.el}</OutletProvider>;
     }, <Empty />);
-  }, [children, currentRoute, role]);
+  }, [children, route, role]);
 
   useEffect(() => {
-    base.set(currentRoute, el);
-  }, [el, currentRoute]);
+    base.set(route, el);
+  }, [el, route]);
 
   const cache = useMemo(() => {
-    !base.has(currentRoute) && base.set(currentRoute, el);
+    if (!base.has(route)) {
+      base.set(route, el);
+    }
     return base;
-  }, [el, currentRoute]);
+  }, [el, route]);
   // keep-alive
   return useMemo(() => {
     const els: React.ReactNode[] = [];
     cache.forEach((el, key) => {
       els.push(
-        key !== currentRoute ? (
+        key !== route ? (
           <div style={{ display: "none" }} key={key}>
             {el}
           </div>
@@ -84,7 +85,7 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
       );
     });
     return <div>{els}</div>;
-  }, [currentRoute, cache]);
+  }, [route, cache]);
 };
 
 export default Routes;

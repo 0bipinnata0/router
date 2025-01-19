@@ -1,5 +1,5 @@
 import BrowserRouter from "./BrowserRouter";
 import HashRouter from "./HashRouter";
-import MemoryRouter from "./MemoryRouter";
+export { MemoryRouter } from "./memory-router";
 
-export { BrowserRouter, HashRouter, MemoryRouter };
+export { BrowserRouter, HashRouter };

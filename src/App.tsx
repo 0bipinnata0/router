@@ -2,7 +2,9 @@ import React from "react";
 import Route from "./components/Route";
 import Routes from "./components/Routes";
 import Link from "./components/Link";
-import { BrowserRouter } from "./components/router";
+import { MemoryRouter as Router } from "./components/router/memory-router";
+// import Router from "./components/router/BrowserRouter";
+// import Router from "./components/router/HashRouter";
 import Home from "./app/Home";
 import Dash from "./app/Dash";
 import Info from "./app/Info";
@@ -11,7 +13,7 @@ import Info from "./app/Info";
 const App: React.FC<React.PropsWithChildren> = () => {
   return (
     <>
-      <BrowserRouter>
+      <Router>
         <Link to="/">home</Link>
         <Link to="/dash">dash</Link>
         <Link to="/dash/info">dash_info</Link>
@@ -28,7 +30,7 @@ const App: React.FC<React.PropsWithChildren> = () => {
           <Route path="/dash/a/b/info" element={<div>absolute info x</div>} />
           <Route path="/dash/a/b/x" element={<div>dash a b x</div>} />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </>
   );
 };

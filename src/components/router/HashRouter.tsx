@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import routeEmit from "../routeEmit";
-import { CourrentRouteProvider } from "../../hook/useCurrentRoute";
+import { RouteProvider } from "../../hook/useRoute";
 
 const HashRouter: React.FC<React.PropsWithChildren> = ({ children }) => {
   useEffect(() => {
@@ -11,9 +11,9 @@ const HashRouter: React.FC<React.PropsWithChildren> = ({ children }) => {
   }, []);
 
   return (
-    <CourrentRouteProvider initialValue={location.hash.replace(/^#/g, "")}>
+    <RouteProvider initialValue={location.hash.replace(/^#/g, "")}>
       {children}
-    </CourrentRouteProvider>
+    </RouteProvider>
   );
 };
 
