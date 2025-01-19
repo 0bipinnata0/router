@@ -42,7 +42,8 @@ const listCombine = (list: IRoute[], obj: IRoute) => {
 const pickRoute = (userRole: string | undefined, children: ReactNode) => {
   const transducer = R.compose(
     filterReducer(isRouteValidElement),
-    filterReducer(R.curryN(2, checkRoleAccess)(userRole))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    filterReducer(R.curryN(2, checkRoleAccess)(userRole) as any)
   );
   return filterInRouteElementReducer(
     transducer,
