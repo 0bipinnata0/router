@@ -4,6 +4,7 @@ import useRoute from "../hook/useRoute";
 import pickRoute from "../utils/pickRoute";
 import find from "../utils/find";
 import { OutletProvider } from "../hook/useOutlet";
+import { generateParams, ParamsProvider } from "../hook/useParams";
 
 const reg = /^\.?\/.*$\//i;
 
@@ -21,13 +22,27 @@ function recursionFn(item: IRoute) {
   return item.children;
 }
 
+function checkEqual(pattern: string, target: string) {
+  const patternList = pattern.split("/");
+  const targetList = target.split("/");
+  if (targetList.length !== patternList.length) {
+    return false;
+  }
+  return patternList.every((pattern, idx) => {
+    if (pattern.startsWith(":")) {
+      return true;
+    }
+    return pattern === targetList[idx];
+  });
+}
+
 function predicateFn(target: string) {
   return (paths: IRoute[]) => {
-    const result = getAbsolutePath(paths);
-    console.info("result", result, "___", target);
-    return target === result;
+    const pattern = getAbsolutePath(paths);
+    return checkEqual(pattern, target);
   };
 }
+
 function combineFn(current: IRoute, routeList: IRoute[]) {
   return [...routeList, current];
 }
@@ -58,9 +73,13 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
     if (!data.find) {
       return <div>not found</div>;
     }
-    return data.result.reduceRight((acc, val) => {
-      return <OutletProvider initialValue={acc}>{val.el}</OutletProvider>;
-    }, <Empty />);
+    return (
+      <ParamsProvider initialValue={generateParams(data.result, route)}>
+        {data.result.reduceRight((acc, val) => {
+          return <OutletProvider initialValue={acc}>{val.el}</OutletProvider>;
+        }, <Empty />)}
+      </ParamsProvider>
+    );
   }, [children, route, role]);
 
   useEffect(() => {
@@ -75,19 +94,19 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
   }, [el, route]);
   // keep-alive
   return useMemo(() => {
-    const els: React.ReactNode[] = [];
-    cache.forEach((el, key) => {
-      els.push(
-        key !== route ? (
-          <div style={{ display: "none" }} key={key}>
-            {el}
-          </div>
-        ) : (
-          <div key={key}>{el}</div>
-        )
-      );
-    });
-    return <div>{els}</div>;
+    return (
+      <>
+        {[...cache.entries()].map(([key, el]) => {
+          return key !== route ? (
+            <div style={{ display: "none" }} key={key}>
+              {el}
+            </div>
+          ) : (
+            <div key={key}>{el}</div>
+          );
+        })}
+      </>
+    );
   }, [route, cache]);
 };
 

@@ -1,4 +1,4 @@
-import Link from "../../components/Link";
+import { Link } from "../..";
 import Outlet from "../../components/Outlet";
 
 export function Course() {
