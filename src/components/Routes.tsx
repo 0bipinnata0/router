@@ -64,39 +64,47 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
     };
   }, [setRoute]);
 
-  const el = useMemo(() => {
+  const result = useMemo(() => {
     const data: { find: boolean; result: IRoute[] } = find(
       recursionFn,
       predicateFn(route),
       combineFn
     )(pickRoute(role, children), []);
     if (!data.find) {
-      return <div>not found</div>;
+      return { el: <div>not found</div>, memo: false };
     }
-    return (
-      <ParamsProvider initialValue={generateParams(data.result, route)}>
-        {data.result.reduceRight((acc, val) => {
-          return <OutletProvider initialValue={acc}>{val.el}</OutletProvider>;
-        }, <Empty />)}
-      </ParamsProvider>
-    );
+    return {
+      el: (
+        <ParamsProvider initialValue={generateParams(data.result, route)}>
+          {data.result.reduceRight((acc, val) => {
+            return <OutletProvider initialValue={acc}>{val.el}</OutletProvider>;
+          }, <Empty />)}
+        </ParamsProvider>
+      ),
+      memo: data.result.reverse()[0].memo,
+    };
   }, [children, route, role]);
 
   useEffect(() => {
-    base.set(route, el);
-  }, [el, route]);
-
-  const cache = useMemo(() => {
-    if (!base.has(route)) {
+    const { el, memo } = result;
+    if (memo) {
       base.set(route, el);
     }
-    return base;
-  }, [el, route]);
+  }, [result, route]);
+
+  const cache = useMemo(() => {
+    const { el, memo } = result;
+    if (memo) {
+      base.set(route, el);
+      return [...base.entries()];
+    }
+    return [[route, el] as const, ...base.entries()];
+  }, [result, route]);
   // keep-alive
   return useMemo(() => {
     return (
       <>
-        {[...cache.entries()].map(([key, el]) => {
+        {cache.map(([key, el]) => {
           return key !== route ? (
             <div style={{ display: "none" }} key={key}>
               {el}
