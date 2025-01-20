@@ -3,6 +3,7 @@ const Route: React.FC<
     path: string;
     element: React.ReactNode;
     role?: string[];
+    memo?: boolean;
   }>
 > = () => {
   return null;

@@ -13,11 +13,12 @@ function isRouteValidElement(
 const createRoute = ({
   props,
 }: React.ReactElement<React.ComponentProps<typeof Route>>): IRoute => {
-  const { path, element, children } = props;
+  const { path, element, children, memo } = props;
   return Object.assign(Object.create(null), {
     path,
     el: element,
     children: R.isEmpty(children) ? [] : children,
+    memo: !!memo,
   });
 };
 

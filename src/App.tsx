@@ -25,8 +25,8 @@ const App: React.FC<React.PropsWithChildren> = () => {
         <Link to="/login">登录</Link>
         <Link to="/register">注册</Link>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} memo />
+          <Route path="/register" element={<Register />} memo />
           <Route path="/" element={<Home />}>
             <Route path="course" element={<Course />}>
               <Route path="backend" element={<Backend />} />
