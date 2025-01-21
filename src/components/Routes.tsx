@@ -81,9 +81,11 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
           }, <Empty />)}
         </ParamsProvider>
       ),
-      memo: data.result.reverse()[0].memo,
+      memo: data.result[data.result.length - 1].memo,
     };
   }, [children, route, role]);
+
+  return result.el;
 
   useEffect(() => {
     const { el, memo } = result;
@@ -100,22 +102,22 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
     }
     return [[route, el] as const, ...base.entries()];
   }, [result, route]);
+  useEffect(() => {
+    console.info("cache", cache);
+  }, [cache]);
   // keep-alive
-  return useMemo(() => {
-    return (
-      <>
-        {cache.map(([key, el]) => {
-          return key !== route ? (
-            <div style={{ display: "none" }} key={key}>
-              {el}
-            </div>
-          ) : (
-            <div key={key}>{el}</div>
-          );
-        })}
-      </>
-    );
-  }, [route, cache]);
+  console.info("render");
+  return (
+    <React.Fragment key="container">
+      {cache.map(([key, el]) => {
+        return (
+          <React.Fragment key={key}>
+            <div style={key !== route ? { display: "none" } : {}}>{el}</div>
+          </React.Fragment>
+        );
+      })}
+    </React.Fragment>
+  );
 };
 
 export default Routes;

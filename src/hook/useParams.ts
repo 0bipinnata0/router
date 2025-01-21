@@ -1,8 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import createStateContext from "../utils/createStateContext";
 
-const useParamsContext = (params: Record<string, string>) =>
-  useState(params)[0];
+function shadowEqual(a: Record<string, string>, b: Record<string, string>) {
+  const mapA = new Map(Object.entries(a));
+  const mapB = new Map(Object.entries(b));
+  if (mapA.size !== mapB.size) {
+    return false;
+  }
+  const notEqual = [...mapA.keys()].some((key) => {
+    return mapA.get(key) !== mapB.get(key);
+  });
+  return !notEqual;
+}
+
+const useParamsContext = (params: Record<string, string>) => {
+  const [state, setState] = useState(params);
+  useEffect(() => {
+    setState((prevState) => {
+      if (shadowEqual(prevState, params)) {
+        return prevState;
+      }
+      return params;
+    });
+  }, [params]);
+
+  return state;
+};
 
 const [ParamsProvider, useParams] = createStateContext(useParamsContext);
 
