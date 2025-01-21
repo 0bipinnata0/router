@@ -35,6 +35,7 @@ const App: React.FC<React.PropsWithChildren> = () => {
               </Route>
               <Route path="android" element={<Android />} />
               <Route path="ios" element={<IOS />} />
+              <Route path="*" element={<div>404...</div>} />
             </Route>
             <Route path="/events" element={<Events />} memo />
           </Route>

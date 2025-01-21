@@ -5,34 +5,52 @@ export function findMaxMatchRoute(
   const x = routePathsList.map((routePath) =>
     caculateMaxMatchLength(target, routePath)
   );
-  return x.reduce((prev, curr) => (curr.length > prev.length ? curr : prev));
+  const result = x.find((item) => item[404]);
+  if (result) {
+    return result.value;
+  }
+  return x
+    .map((item) => item.value)
+    .reduce((prev, curr) => (curr.length > prev.length ? curr : prev));
 }
 
 const reg = /^\.?\/.*$\//i;
 function caculateMaxMatchLength(target: string, routePath: IRoute[]) {
-  const normalizedRoutePath = routePath;
-
-  const { count } = normalizedRoutePath.reduce(
-    ({ count, offset, done }, route) => {
-      if (done) {
-        return { count, offset, done };
+  const result = routePath.reduce(
+    (prev, route) => {
+      if (prev.done) {
+        return prev;
       }
+      const { count, offset } = prev;
+
       const normalizedRoutePath = route.path.replace(reg, "");
       const len = normalizedRoutePath.length;
       const startOffset = normalizedRoutePath.startsWith("/") ? 0 : offset + 1;
-      if (
-        target.slice(startOffset, startOffset + len) === normalizedRoutePath
-      ) {
-        return { count: count + 1, offset: startOffset + len, done: false };
+
+      if (route.path === "*") {
+        return { count: count + 1, offset, done: true, 404: true };
       }
-      return { count, offset, done: true };
+
+      if (
+        target.slice(startOffset, startOffset + len) === normalizedRoutePath &&
+        target[startOffset + 1] !== "/"
+      ) {
+        return {
+          count: count + 1,
+          offset: startOffset + len,
+          done: false,
+          404: false,
+        };
+      }
+      return { count, offset, done: true, 404: false };
     },
     {
       count: 0,
       offset: 0,
       done: false,
+      404: false,
     }
   );
 
-  return normalizedRoutePath.slice(0, count);
+  return { value: routePath.slice(0, result.count), 404: result[404] };
 }
