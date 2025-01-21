@@ -87,29 +87,18 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
 
   return result.el;
 
-  useEffect(() => {
-    const { el, memo } = result;
-    if (memo) {
-      base.set(route, el);
-    }
+  const cache = useMemo(() => {
+    const { el } = result;
+    base.set(route, el);
+    return [...base.entries()];
   }, [result, route]);
 
-  const cache = useMemo(() => {
-    const { el, memo } = result;
-    if (memo) {
-      base.set(route, el);
-      return [...base.entries()];
-    }
-    return [[route, el] as const, ...base.entries()];
-  }, [result, route]);
-  useEffect(() => {
-    console.info("cache", cache);
-  }, [cache]);
+  // return base.get(route);
   // keep-alive
-  console.info("render");
   return (
     <React.Fragment key="container">
       {cache.map(([key, el]) => {
+        console.info("key", key);
         return (
           <React.Fragment key={key}>
             <div style={key !== route ? { display: "none" } : {}}>{el}</div>
