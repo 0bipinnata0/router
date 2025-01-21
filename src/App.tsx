@@ -28,7 +28,7 @@ const App: React.FC<React.PropsWithChildren> = () => {
           <Route path="/login" element={<Login />} memo />
           <Route path="/register" element={<Register />} memo />
           <Route path="/" element={<Home />}>
-            <Route path="course" element={<Course />} memo>
+            <Route path="/course" element={<Course />} memo>
               <Route path="backend" element={<Backend />} memo />
               <Route path="frontend" element={<Frontend />} memo>
                 <Route path=":id" element={<Book />} />

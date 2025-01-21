@@ -5,17 +5,20 @@ import pickRoute from "../utils/pickRoute";
 import find from "../utils/find";
 import { OutletProvider } from "../hook/useOutlet";
 import { generateParams, ParamsProvider } from "../hook/useParams";
-
-const reg = /^\.?\/.*$\//i;
+import { findMaxMatchRoute } from "../utils/findMaxMatchRoute";
 
 function getAbsolutePath(els: Array<{ path: string }>) {
   const result = els
-    .map((el) => el.path.replace(reg, ""))
-    .filter((path) => path !== "/")
+    .map((el) => el.path.replace("./", ""))
+    .reduce((prev, curr) => {
+      if (curr.startsWith("/")) {
+        return [curr.split("/")].flat();
+      }
+      return [...prev, curr.split("/")].flat();
+    }, [] as string[])
+    .filter(Boolean)
     .join("/");
-  if (result.startsWith("/")) {
-    return result;
-  }
+
   return `/${result}`;
 }
 function recursionFn(item: IRoute) {
@@ -65,23 +68,38 @@ const Routes: React.FC<React.PropsWithChildren<{ role?: string }>> = ({
   }, [setRoute]);
 
   const result = useMemo(() => {
-    const data: { find: boolean; result: IRoute[] } = find(
+    const data: { find: boolean; result: IRoute[][] } = find(
       recursionFn,
       predicateFn(route),
       combineFn
     )(pickRoute(role, children), []);
+
     if (!data.find) {
-      return { el: <div>not found</div>, memo: false };
+      //
+      const routeList = findMaxMatchRoute(data.result, route);
+      return {
+        el: (
+          <ParamsProvider initialValue={generateParams(data.result[0], route)}>
+            {routeList.reduceRight((acc, val) => {
+              return (
+                <OutletProvider initialValue={acc}>{val.el}</OutletProvider>
+              );
+            }, <div>not found</div>)}
+          </ParamsProvider>
+        ),
+        memo: false,
+      };
     }
+
     return {
       el: (
-        <ParamsProvider initialValue={generateParams(data.result, route)}>
-          {data.result.reduceRight((acc, val) => {
+        <ParamsProvider initialValue={generateParams(data.result[0], route)}>
+          {data.result[0].reduceRight((acc, val) => {
             return <OutletProvider initialValue={acc}>{val.el}</OutletProvider>;
           }, <Empty />)}
         </ParamsProvider>
       ),
-      memo: data.result[data.result.length - 1].memo,
+      memo: data.result[0][data.result.length - 1].memo,
     };
   }, [children, route, role]);
 
