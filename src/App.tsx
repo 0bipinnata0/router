@@ -28,13 +28,14 @@ const App: React.FC<React.PropsWithChildren> = () => {
           <Route path="/login" element={<Login />} memo />
           <Route path="/register" element={<Register />} memo />
           <Route path="/" element={<Home />}>
-            <Route path="course" element={<Course />} memo>
+            <Route path="/course" element={<Course />} memo>
               <Route path="backend" element={<Backend />} memo />
               <Route path="frontend" element={<Frontend />} memo>
                 <Route path=":id" element={<Book />} />
               </Route>
               <Route path="android" element={<Android />} />
               <Route path="ios" element={<IOS />} />
+              <Route path="*" element={<div>404...</div>} />
             </Route>
             <Route path="/events" element={<Events />} memo />
           </Route>
