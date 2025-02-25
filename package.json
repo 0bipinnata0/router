@@ -1,12 +1,12 @@
 {
   "name": "@0bipinnata0/router",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "repository": {
-    "url": "https://github.com/0bipinnata0/my-router"
+    "url": "https://github.com/0bipinnata0/router"
   },
   "files": [
     "dist"
