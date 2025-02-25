@@ -1,6 +1,7 @@
-[![npm package][npm-badge]][npm] [![build]][build]
+[![npm package][npm-badge]][npm] [![build][build-badge]][build]
 [npm-badge]: https://img.shields.io/npm/v/@0bipinnata0/router.svg
 [npm]: https://www.npmjs.org/package/@0bipinnata0/router
+[build-badge]: https://img.shields.io/github/actions/workflow/status/remix-run/react-router/test.yml?branch=dev&style=square
 [build]: https://img.shields.io/github/actions/workflow/status/0bipinnata0/router/pnpm-publish.yml
 
 # React Router 实现
