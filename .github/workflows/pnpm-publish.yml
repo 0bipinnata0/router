@@ -17,7 +17,7 @@ jobs:
         node-version: [21.x]
 
     steps:
-      - name: Checkout
+      - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         name: Install pnpm
@@ -32,6 +32,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - run: pnpm --if-present run build
+      - name: 🧪 Run tests
+        run: pnpm test
 
   publish-npm:
     needs: build

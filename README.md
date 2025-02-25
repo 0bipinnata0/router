@@ -1,5 +1,9 @@
 [![npm package][npm-badge]][npm] [![build][build-badge]][build]
 
+
+[npm-badge]: https://img.shields.io/npm/v/@0bipinnata0/router.svg
+[npm]: https://www.npmjs.org/package/@0bipinnata0/router
+
 # React Router 实现
 
 ## 路由的三种实现方式
@@ -101,3 +105,8 @@
 - Outlet: 子路由渲染组件
 - useParams: 获取路由参数 Hook
 - useNavigate: 编程式导航 Hook
+
+[npm-badge]: https://img.shields.io/npm/v/your-package-name.svg
+[npm]: https://www.npmjs.org/package/your-package-name
+[build-badge]: https://github.com/your-username/your-repo/actions/workflows/ci.yml/badge.svg
+[build]: https://github.com/your-username/your-repo/actions/workflows/ci.yml
