@@ -1,4 +1,4 @@
-[![npm package][npm-badge]][npm] [![build][build-badge]][build]
+[![npm package][npm-badge]][npm] [![build]][build]
 [npm-badge]: https://img.shields.io/npm/v/@0bipinnata0/router.svg
 [npm]: https://www.npmjs.org/package/@0bipinnata0/router
 [build]: https://img.shields.io/github/actions/workflow/status/0bipinnata0/router/pnpm-publish.yml
